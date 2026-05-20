@@ -75,26 +75,28 @@ export default function DnsManager() {
               </Flex>
 
               <Flex alignItems={{ default: 'alignItemsCenter' }}>
-                <InputGroup className="pf-v5-u-mr-md">
-                  <InputGroupItem>
-                    <InputGroupText><KeyIcon style={{ fontSize: '1.25rem'}} /></InputGroupText>
-                  </InputGroupItem>
-                  <InputGroupItem>
+                <div style={{ position: 'relative' }} className="pf-v5-u-mr-md">
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: '10px', 
+                      top: '50%', 
+                      transform: 'translateY(-50%)',
+                      color: '#8a8d90', 
+                      pointerEvents: 'none', 
+                      zIndex: 1 
+                    }}>
+                      <KeyIcon />
+                    </span>
                     <TextInput 
                       value={apiKey} 
                       onChange={(_event, value) => setApiKey(value)} 
                       placeholder="API Key..." 
                       style={{ width: '200px',
-                     
+                        paddingLeft: '30px',
                         fontSize: '0.875rem'
                       }} 
                     />
-                  </InputGroupItem>
-                </InputGroup>
-
-                
-
-    
+                </div>
               </Flex>
             </Flex>
           </CardBody>
@@ -111,25 +113,61 @@ export default function DnsManager() {
                 <ToolbarContent>
                   <ToolbarItem>
                     <InputGroup>
-                      <InputGroupItem><InputGroupText><SearchIcon /></InputGroupText></InputGroupItem>
-                      <InputGroupItem><TextInput placeholder="Buscar nome, IP..." style={{ width: '250px' }}/></InputGroupItem>
+                      <div style={{ position: 'relative' }}>
+                        <span style={{ 
+                          position: 'absolute', 
+                          left: '10px', 
+                          top: '50%', 
+                          transform: 'translateY(-50%)',
+                          color: '#8a8d90', 
+                          pointerEvents: 'none', 
+                          zIndex: 1 
+                        }}>
+                          <SearchIcon />
+                        </span>
+                      </div>  
+                      <InputGroupItem><TextInput placeholder="Buscar nome, IP..." style={{ width: '250px', paddingLeft: '30px' }}/></InputGroupItem>
                     </InputGroup>
                   </ToolbarItem>
                   <ToolbarItem>
                     <InputGroup>
-                      <InputGroupItem><InputGroupText><FilterIcon /></InputGroupText></InputGroupItem>
+                    <div style={{ position: 'relative' }}>
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: '10px', 
+                      top: '50%', 
+                      transform: 'translateY(-50%)',
+                      color: '#8a8d90', 
+                      pointerEvents: 'none', 
+                      zIndex: 1 
+                    }}>
+                      <FilterIcon />
+                    </span>
+                  </div>
                       <InputGroupItem>
-                        <FormSelect value="todos">
-                          <FormSelectOption value="todos" label="Todos os Tipos" />
+                        <FormSelect value="todos" style={{ width: '200px', paddingLeft: '30px' }}>
+                          <FormSelectOption value="todos" label="Todos os Tipos"/>
                         </FormSelect>
                       </InputGroupItem>
                     </InputGroup>
                   </ToolbarItem>
                   <ToolbarItem>
                     <InputGroup>
-                      <InputGroupItem><InputGroupText><UserIcon /></InputGroupText></InputGroupItem>
+                    <div style={{ position: 'relative' }}>
+                    <span style={{ 
+                      position: 'absolute', 
+                      left: '10px', 
+                      top: '50%', 
+                      transform: 'translateY(-50%)',
+                      color: '#8a8d90', 
+                      pointerEvents: 'none', 
+                      zIndex: 1
+                    }}>
+                      <UserIcon />
+                    </span>
+                  </div>
                       <InputGroupItem>
-                        <FormSelect value="todos">
+                        <FormSelect value="todos" style={{ width: '200px', paddingLeft: '30px' }}>
                           <FormSelectOption value="todos" label="Todos os Donos" />
                         </FormSelect>
                       </InputGroupItem>
