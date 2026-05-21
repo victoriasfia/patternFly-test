@@ -34,8 +34,8 @@ export default function App() {
   const [activeSortIndex, setActiveSortIndex] = useState(null);
   const [activeSortDirection, setActiveSortDirection] = useState(null);
   
-  const statusOptions = ['New', 'Pending', 'Running', 'Cancelled'];
-  const riskOptions = ['Risk', 'Low', 'Medium', 'High'];
+  const statusOptions = ['A', 'CNAME', 'NS', 'AAAA', 'TXT', 'SRV', 'PTR', 'SOA'];
+  const riskOptions = ['Equipe teste', 'Equipe Infra', 'Equipe Dev', 'Equipe banco de dados'];
   
   const columnNames = {
     name: 'Nome',
@@ -46,13 +46,49 @@ export default function App() {
   };
 
   const repositories = [
-    { name: 'one', type: 'two', value: 'a', owner: 'four', action: 'five' }, 
-    { name: 'a', type: 'two', value: 'k', owner: 'four', action: 'five' }, 
-    { name: 'p', type: 'two', value: 'b', owner: 'four', action: 'five' },
-    { name: 'one', type: 'two', value: 'a', owner: 'four', action: 'five' }, 
-    { name: 'a', type: 'two', value: 'k', owner: 'four', action: 'five' }, 
-    { name: 'p', type: 'two', value: 'b', owner: 'four', action: 'five' }
-  ];
+  { 
+    name: 'google.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'google.com', 
+    owner: 'Equipe Infra', 
+    action: '' 
+  },
+  { 
+    name: 'shopp.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'marketplace', 
+    owner: 'equipe teste', 
+    action: '' 
+  },
+  { 
+    name: 'painel.novaredes.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'portal.novaredes.com.', 
+    owner: 'equipe teste', 
+    action: '' 
+  },
+  { 
+    name: 'backup.datacenterx.teste.es.gov.br.', 
+    type: 'NS', 
+    value: 'ns2.database.com.', 
+    owner: 'Equipe banco de dados', 
+    action: '' 
+  },
+  { 
+    name: 'filmestv.teste.es.gov.br.', 
+    type: 'A', 
+    value: '192.168.1.10', 
+    owner: 'Equipe Dev', 
+    action: '' 
+  },
+  { 
+    name: 'filme', 
+    type: 'NS', 
+    value: 'ns6.devfilm.com.', 
+    owner: 'Equipe teste', 
+    action: '' 
+  }
+];
 
   const onStatusToggle = () => setStatusIsExpanded(!statusIsExpanded);
   const onStatusSelect = (_event, selection) => {
@@ -263,8 +299,8 @@ export default function App() {
           </SelectGroup>
           <SelectGroup label="Sort direction">
             <SelectList>
-              <SelectOption isSelected={activeSortDirection === 'asc'} value="asc" key="ascending">Ascending</SelectOption>
-              <SelectOption isSelected={activeSortDirection === 'desc'} value="desc" key="descending">Descending</SelectOption>
+              <SelectOption isSelected={activeSortDirection === 'asc'} value="asc" key="ascending">Crescente</SelectOption>
+              <SelectOption isSelected={activeSortDirection === 'desc'} value="desc" key="descending">Decrescente</SelectOption>
             </SelectList>
           </SelectGroup>
         </Select>
