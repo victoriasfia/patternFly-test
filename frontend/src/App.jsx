@@ -1,17 +1,20 @@
 import { Fragment, useState } from 'react';
 import {
-  Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, ButtonVariant, Card, CardBody, Content, Divider, Dropdown, 
-  DropdownGroup, DropdownItem, DropdownList, Gallery, GalleryItem, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
+  Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, ButtonVariant, Content, Divider, Dropdown, 
+  DropdownGroup, DropdownItem, DropdownList, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
   MastheadBrand, MastheadToggle, MenuToggle, Nav, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
-  ToolbarContent, ToolbarGroup, ToolbarItem,
-  SearchInput, Select, SelectList, SelectOption
+  ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup
 } from '@patternfly/react-core';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+
 import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
 import EllipsisVIcon from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
+import SortAmountDownIcon from '@patternfly/react-icons/dist/esm/icons/sort-amount-down-icon';
+
 import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.svg';
 import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg';
 
@@ -26,9 +29,31 @@ export default function App() {
   const [statusSelected, setStatusSelected] = useState('');
   const [riskIsExpanded, setRiskIsExpanded] = useState(false);
   const [riskSelected, setRiskSelected] = useState('');
+
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [activeSortIndex, setActiveSortIndex] = useState(null);
+  const [activeSortDirection, setActiveSortDirection] = useState(null);
   
   const statusOptions = ['New', 'Pending', 'Running', 'Cancelled'];
   const riskOptions = ['Risk', 'Low', 'Medium', 'High'];
+  
+  const columnNames = {
+    name: 'Nome',
+    type: 'Tipo',
+    value: 'Valor',
+    owner: 'Owner',
+    action: 'Ação'
+  };
+
+  const repositories = [
+    { name: 'one', type: 'two', value: 'a', owner: 'four', action: 'five' }, 
+    { name: 'a', type: 'two', value: 'k', owner: 'four', action: 'five' }, 
+    { name: 'p', type: 'two', value: 'b', owner: 'four', action: 'five' },
+    { name: 'one', type: 'two', value: 'a', owner: 'four', action: 'five' }, 
+    { name: 'a', type: 'two', value: 'k', owner: 'four', action: 'five' }, 
+    { name: 'p', type: 'two', value: 'b', owner: 'four', action: 'five' }
+  ];
+
   const onStatusToggle = () => setStatusIsExpanded(!statusIsExpanded);
   const onStatusSelect = (_event, selection) => {
     setStatusSelected(selection);
@@ -53,16 +78,45 @@ export default function App() {
   const onFullKebabDropdownToggle = () => setIsFullKebabDropdownOpen(!isFullKebabDropdownOpen);
   const onFullKebabDropdownSelect = () => setIsFullKebabDropdownOpen(false);
 
+  const getSortableRowValues = repo => {
+    const {name, type, value, owner, action} = repo;
+    return [name, type, value, owner, action];
+  };
+
+  let sortedRepositories = repositories;
+  if (activeSortIndex !== null) {
+    sortedRepositories = repositories.sort((a, b) => {
+      const aValue = getSortableRowValues(a)[activeSortIndex];
+      const bValue = getSortableRowValues(b)[activeSortIndex];
+      if (typeof aValue === 'number') {
+        if (activeSortDirection === 'asc') return aValue - bValue;
+        return bValue - aValue;
+      } else {
+        if (activeSortDirection === 'asc') return aValue.localeCompare(bValue);
+        return bValue.localeCompare(aValue);
+      }
+    });
+  }
+
+  const getSortParams = columnIndex => ({
+    sortBy: {
+      index: activeSortIndex,
+      direction: activeSortDirection
+    },
+    onSort: (_event, index, direction) => {
+      setActiveSortIndex(index);
+      setActiveSortDirection(direction);
+    },
+    columnIndex
+  });
+
   const kebabDropdownItems = (
     <>
-      <DropdownItem>
-        <CogIcon /> Settings
-      </DropdownItem>
-      <DropdownItem>
-        <HelpIcon /> Help
-      </DropdownItem>
+      <DropdownItem><CogIcon /> Settings</DropdownItem>
+      <DropdownItem><HelpIcon /> Help</DropdownItem>
     </>
   );
+  
   const userDropdownItems = (
     <>
       <DropdownItem key="group 2 profile">My profile</DropdownItem>
@@ -142,21 +196,18 @@ export default function App() {
   );
 
   const mainContainerId = 'main-content';
-  const handleClick = event => {
-    event.preventDefault();
-    const mainContentElement = document.getElementById(mainContainerId);
-    if (mainContentElement) {
-      mainContentElement.focus();
-    }
-  };
   const pageSkipToContent = (
-    <SkipToContent onClick={handleClick} href={`#${mainContainerId}`}>
+    <SkipToContent onClick={event => {
+      event.preventDefault();
+      document.getElementById(mainContainerId)?.focus();
+    }} href={`#${mainContainerId}`}>
       Skip to content
     </SkipToContent>
   );
 
   const toggleGroupItems = (
     <Fragment>
+      {/* Input de Busca */}
       <ToolbarItem>
         <SearchInput 
           aria-label="Component toggle groups example search input" 
@@ -167,50 +218,74 @@ export default function App() {
           style={{ width: '250px' }}
         />
       </ToolbarItem>
-      {/*filtrar os Tipos */}
+      
+      {/* Grupo de Filtros */}
       <ToolbarGroup variant="filter-group">
         <ToolbarItem>
+          <FilterIcon/> Filtrar por:
           <Select toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => onStatusToggle()} isExpanded={statusIsExpanded} style={{ width: '200px', margin: '0 8px' }}>
                 {statusSelected || 'Todos os Tipos'}
               </MenuToggle>} onSelect={onStatusSelect} onOpenChange={isOpen => setStatusIsExpanded(isOpen)} selected={statusSelected} isOpen={statusIsExpanded}>
             <SelectList>
-              {statusOptions.map((option, index) => <SelectOption key={index} value={option}>
-                  {option}
-                </SelectOption>)}
+              {statusOptions.map((option, index) => <SelectOption key={index} value={option}>{option}</SelectOption>)}
             </SelectList>
           </Select>
         </ToolbarItem>
         <ToolbarItem>
-
-          {/*filtrar os Owners */}
           <Select toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => onRiskToggle()} isExpanded={riskIsExpanded} style={{ width: '200px', margin: '0 8px' }}>
                 {riskSelected || 'Todos os Owners'}
               </MenuToggle>} onSelect={onRiskSelect} selected={riskSelected} isOpen={riskIsExpanded} onOpenChange={isOpen => setRiskIsExpanded(isOpen)}>
             <SelectList>
-              {riskOptions.map((option, index) => <SelectOption key={index} value={option}>
-                  {option}
-                </SelectOption>)}
+              {riskOptions.map((option, index) => <SelectOption key={index} value={option}>{option}</SelectOption>)}
             </SelectList>
           </Select>
         </ToolbarItem>
       </ToolbarGroup>
-    </Fragment>
-  );
 
-  const toolbarItems = (
-    <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
-      {toggleGroupItems}
-    </ToolbarToggleGroup>
+      {/* Botão de Ordenação (Sort) Movido para a Toolbar principal */}
+      <ToolbarItem>
+        <Select isOpen={isSortDropdownOpen} selected={[activeSortDirection, activeSortIndex]} onOpenChange={isOpen => setIsSortDropdownOpen(isOpen)} onSelect={(event, value) => {
+          if (value === 'asc' || value === 'desc') {
+            setActiveSortDirection(value);
+          } else {
+            setActiveSortIndex(value);
+            setActiveSortDirection(activeSortDirection !== null ? activeSortDirection : 'asc');
+          }
+        }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)} isExpanded={isSortDropdownOpen} variant="plain" aria-label="Sort columns" icon={<SortAmountDownIcon />} />}>
+          <SelectGroup label="Sort column">
+            <SelectList>
+              {Object.values(columnNames).map((column, columnIndex) => (
+                <SelectOption key={column} value={columnIndex} isSelected={activeSortIndex === columnIndex}>
+                  {column}
+                </SelectOption>
+              ))}
+            </SelectList>
+          </SelectGroup>
+          <SelectGroup label="Sort direction">
+            <SelectList>
+              <SelectOption isSelected={activeSortDirection === 'asc'} value="asc" key="ascending">Ascending</SelectOption>
+              <SelectOption isSelected={activeSortDirection === 'desc'} value="desc" key="descending">Descending</SelectOption>
+            </SelectList>
+          </SelectGroup>
+        </Select>
+      </ToolbarItem>
+    </Fragment>
   );
 
   const searchToolbar = (
     <Toolbar id="toolbar-component-managed-toggle-groups" className="pf-m-toggle-group-container">
-      <ToolbarContent>{toolbarItems}</ToolbarContent>
+      <ToolbarContent>
+        <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
+          {toggleGroupItems}
+        </ToolbarToggleGroup>
+      </ToolbarContent>
     </Toolbar>
   );
 
+
   return (
     <Page masthead={masthead} sidebar={sidebar} isManagedSidebar skipToContent={pageSkipToContent} mainContainerId={mainContainerId}>
+      {/* Título da Página */}
       <PageGroup stickyOnBreakpoint={{ default: 'top' }}>
         <PageSection isWidthLimited aria-labelledby="main-title">
           <Content>
@@ -220,17 +295,34 @@ export default function App() {
         </PageSection>
       </PageGroup>
       
+      {/* Toolbar Unificada e Tabela */}
       <PageSection variant="light">
+        {/* Renderiza a Barra de Ferramentas (Busca, Filtro, Ordem) */}
         {searchToolbar}
-      </PageSection>
-
-      <PageSection aria-label="Card gallery">
-        <Gallery hasGutter>
-          {Array.from({ length: 50 }).map((_value, index) => (
-            <GalleryItem key={index}>
-            </GalleryItem>
-          ))}
-        </Gallery>
+        
+        {/* Renderiza a Tabela */}
+        <Table aria-label="Sortable table custom toolbar">
+          <Thead>
+            <Tr>
+              <Th sort={getSortParams(0)}>{columnNames.name}</Th>
+              <Th sort={getSortParams(1)}>{columnNames.type}</Th>
+              <Th sort={getSortParams(2)} info={{ tooltip: 'More information' }}>{columnNames.value}</Th>
+              <Th sort={getSortParams(3)}>{columnNames.owner}</Th>
+              <Th sort={getSortParams(4)}>{columnNames.action}</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sortedRepositories.map((repo, rowIndex) => (
+              <Tr key={rowIndex}>
+                <Td dataLabel={columnNames.name}>{repo.name}</Td>
+                <Td dataLabel={columnNames.type}>{repo.type}</Td>
+                <Td dataLabel={columnNames.value}>{repo.value}</Td>
+                <Td dataLabel={columnNames.owner}>{repo.owner}</Td>
+                <Td dataLabel={columnNames.action}>{repo.action}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
       </PageSection>
     </Page>
   );
