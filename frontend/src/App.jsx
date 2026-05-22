@@ -51,116 +51,25 @@ export default function App() {
     type: 'Tipo',
     value: 'Valor',
     owner: 'Owner',
-    action: 'Ação'
   };
 
-const repositories = [
-  { 
-    name: 'google.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'google.com', 
-    owner: 'Equipe Infra', 
-    action: '' 
-  },
-  { 
-    name: 'shopp.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'marketplace', 
-    owner: 'equipe teste', 
-    action: '' 
-  },
-  { 
-    name: 'painel.novaredes.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'portal.novaredes.com.', 
-    owner: 'equipe teste', 
-    action: '' 
-  },
-  { 
-    name: 'backup.datacenterx.teste.es.gov.br.', 
-    type: 'NS', 
-    value: 'ns2.database.com.', 
-    owner: 'Equipe banco de dados', 
-    action: '' 
-  },
-  { 
-    name: 'filmestv.teste.es.gov.br.', 
-    type: 'A', 
-    value: '192.168.1.10', 
-    owner: 'Equipe Dev', 
-    action: '' 
-  },
-  { 
-    name: 'portal.teste.es.gov.br.', 
-    type: 'A', 
-    value: '192.168.10.5', 
-    owner: 'Equipe Web', 
-    action: '' 
-  },
-  { 
-    name: 'api.teste.es.gov.br.', 
-    type: 'A', 
-    value: '10.1.0.25', 
-    owner: 'Equipe Backend', 
-    action: '' 
-  },
-  { 
-    name: 'login.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'auth.securelogin.net.', 
-    owner: 'Equipe Segurança', 
-    action: '' 
-  },
-  { 
-    name: 'cloudbackup.teste.es.gov.br.', 
-    type: 'NS', 
-    value: 'ns1.cloudstorage.com.', 
-    owner: 'Equipe Infra', 
-    action: '' 
-  },
-  { 
-    name: 'monitor.teste.es.gov.br.', 
-    type: 'A', 
-    value: '172.16.5.80', 
-    owner: 'Equipe NOC', 
-    action: '' 
-  },
-  { 
-    name: 'chatinterno.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'teams.communicationhub.io.', 
-    owner: 'Equipe Comunicação', 
-    action: '' 
-  },
-  { 
-    name: 'homolog.teste.es.gov.br.', 
-    type: 'A', 
-    value: '192.168.50.12', 
-    owner: 'Equipe QA', 
-    action: '' 
-  },
-  { 
-    name: 'arquivos.teste.es.gov.br.', 
-    type: 'A', 
-    value: '10.10.10.10', 
-    owner: 'Equipe Storage', 
-    action: '' 
-  },
-  { 
-    name: 'centralajuda.teste.es.gov.br.', 
-    type: 'CNAME', 
-    value: 'suporte.helpdesk.com.', 
-    owner: 'Equipe Suporte', 
-    action: '' 
-  },
-  { 
-    name: 'dnssec.teste.es.gov.br.', 
-    type: 'NS', 
-    value: 'ns2.securedns.net.', 
-    owner: 'Equipe Redes', 
-    action: '' 
-  }
-];
+  const repositories = [
+    { name: 'google.teste.es.gov.br.', type: 'CNAME', value: 'google.com', owner: 'Equipe Infra'},
+    { name: 'shopp.teste.es.gov.br.', type: 'CNAME', value: 'marketplace', owner: 'equipe teste'},
+    { name: 'painel.novaredes.teste.es.gov.br.', type: 'CNAME',  value: 'portal.novaredes.com.', owner: 'equipe teste'},
+    { name: 'backup.datacenterx.teste.es.gov.br.', type: 'NS', value: 'ns2.database.com.', owner: 'Equipe banco de dados'},
+    { name: 'filmestv.teste.es.gov.br.', type: 'A', value: '192.168.1.10', owner: 'Equipe Dev'},
+    { name: 'portal.teste.es.gov.br.', type: 'A', value: '192.168.10.5', owner: 'Equipe Web'},
+    { name: 'api.teste.es.gov.br.', type: 'A', value: '10.1.0.25', owner: 'Equipe Backend'},
+    { name: 'login.teste.es.gov.br.', type: 'CNAME', value: 'auth.securelogin.net.', owner: 'Equipe Segurança'},
+    { name: 'cloudbackup.teste.es.gov.br.', type: 'NS', value: 'ns1.cloudstorage.com.', owner: 'Equipe Infra'},
+    { name: 'monitor.teste.es.gov.br.', type: 'A', value: '172.16.5.80', owner: 'Equipe NOC'},
+    { name: 'chatinterno.teste.es.gov.br.', type: 'CNAME', value: 'teams.communicationhub.io.', owner: 'Equipe Comunicação'},
+    { name: 'homolog.teste.es.gov.br.', type: 'A', value: '192.168.50.12', owner: 'Equipe QA'},
+    { name: 'arquivos.teste.es.gov.br.', type: 'A', value: '10.10.10.10', owner: 'Equipe Storage'},
+    { name: 'centralajuda.teste.es.gov.br.', type: 'CNAME', value: 'suporte.helpdesk.com.',owner: 'Equipe Suporte'},
+    { name: 'dnssec.teste.es.gov.br.',type: 'NS',  value: 'ns2.securedns.net.', owner: 'Equipe Redes'}
+  ];
 
   const onStatusToggle = () => setStatusIsExpanded(!statusIsExpanded);
   const onStatusSelect = (_event, selection) => {
@@ -205,8 +114,8 @@ const repositories = [
   };
 
   const getSortableRowValues = repo => {
-    const {name, type, value, owner, action} = repo;
-    return [name, type, value, owner, action];
+    const {name, type, value, owner} = repo;
+    return [name, type, value, owner];
   };
 
   let sortedRepositories = repositories;
@@ -446,7 +355,6 @@ const repositories = [
               <Th sort={getSortParams(1)}>{columnNames.type}</Th>
               <Th sort={getSortParams(2)} info={{ tooltip: 'More information' }}>{columnNames.value}</Th>
               <Th sort={getSortParams(3)}>{columnNames.owner}</Th>
-              <Th sort={getSortParams(4)}>{columnNames.action}</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -456,7 +364,7 @@ const repositories = [
                 <Td dataLabel={columnNames.type}>{repo.type}</Td>
                 <Td dataLabel={columnNames.value}>{repo.value}</Td>
                 <Td dataLabel={columnNames.owner}>{repo.owner}</Td>
-                <Td dataLabel={columnNames.action}>{repo.action}</Td>
+                
               </Tr>
             ))}
           </Tbody>
