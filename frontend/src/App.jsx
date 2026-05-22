@@ -38,6 +38,9 @@ export default function App() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeSortIndex, setActiveSortIndex] = useState(null);
   const [activeSortDirection, setActiveSortDirection] = useState(null);
+
+  const [value, setValue] = useState('');
+  const [resultsCount, setResultsCount] = useState(0);
   
   
   const statusOptions = ['A', 'CNAME', 'NS', 'AAAA', 'TXT', 'SRV', 'PTR', 'SOA'];
@@ -191,6 +194,15 @@ const repositories = [
   const onKebabDropdownSelect = () => setIsKebabDropdownOpen(false);
   const onFullKebabDropdownToggle = () => setIsFullKebabDropdownOpen(!isFullKebabDropdownOpen);
   const onFullKebabDropdownSelect = () => setIsFullKebabDropdownOpen(false);
+
+  const onChange = value => {
+    setValue(value);
+    setResultsCount(3);
+  };
+  const onClear = () => {
+    setValue('');
+    setResultsCount(0);
+  };
 
   const getSortableRowValues = repo => {
     const {name, type, value, owner, action} = repo;
@@ -356,14 +368,9 @@ const repositories = [
     <Fragment>
       {/* Input de Busca */}
       <ToolbarItem>
-        <SearchInput 
-          aria-label="Component toggle groups example search input" 
-          onChange={(_event, value) => onInputChange(value)} 
-          value={inputValue} 
-          onClear={() => onInputChange('')} 
-          placeholder="Buscar nome, IP..."
-          style={{ width: '250px' }}
-        />
+        <SearchInput aria-label="Match with result count" placeholder="Buscar por nome, tipo ou valor..." 
+        value={value} onChange={(_event, value) => onChange(value)} onClear={onClear} resultsCount={resultsCount}
+        style={{width: '450px' }} />
       </ToolbarItem>
 
       {/* Botão de Ordenação (Sort) Movido para a Toolbar principal */}
