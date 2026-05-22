@@ -2,12 +2,14 @@ import { Fragment, useState } from 'react';
 import {
   Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, ButtonVariant, Content, Divider, Dropdown, 
   DropdownGroup, DropdownItem, DropdownList, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
-  MastheadBrand, MastheadToggle, MenuToggle, Nav, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
+  MastheadBrand, MastheadToggle, MenuToggle, Nav, NavExpandable, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
   ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup
 } from '@patternfly/react-core';
+import { createRoot } from "react-dom/client";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
+import "@patternfly/react-core/dist/styles/base.css";
 import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
@@ -19,10 +21,12 @@ import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.sv
 import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg';
 
 export default function App() {
+  const [activeGroup, setActiveGroup] = useState('nav-group-1');
+  const [activeItem, setActiveItem] = useState('nav-group-1_item-1');
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
   const [isFullKebabDropdownOpen, setIsFullKebabDropdownOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(1);
   
   const [inputValue, setInputValue] = useState('');
   const [statusIsExpanded, setStatusIsExpanded] = useState(false);
@@ -33,6 +37,7 @@ export default function App() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeSortIndex, setActiveSortIndex] = useState(null);
   const [activeSortDirection, setActiveSortDirection] = useState(null);
+  
   
   const statusOptions = ['A', 'CNAME', 'NS', 'AAAA', 'TXT', 'SRV', 'PTR', 'SOA'];
   const riskOptions = ['Equipe teste', 'Equipe Infra', 'Equipe Dev', 'Equipe banco de dados'];
@@ -100,6 +105,20 @@ export default function App() {
   const onRiskSelect = (_event, selection) => {
     setRiskSelected(selection);
     setRiskIsExpanded(false);
+  };
+
+  const onSelect = (_event, result) => {
+    setActiveGroup(result.groupId);
+    setActiveItem(result.itemId);
+  };
+
+  const onToggle = (_event, result) => {
+    console.log(`Group ${result.groupId} expanded? ${result.isExpanded}`);
+  };
+
+
+  const onItemClick = (_event, itemId, _groupId) => {
+    console.log(`Custom click handler on ${itemId}`);
   };
 
   const onInputChange = newValue => setInputValue(newValue);
@@ -213,14 +232,41 @@ export default function App() {
   );
 
   const pageNav = (
-    <Nav onSelect={onNavSelect}>
+      <Nav onSelect={onSelect} onToggle={onToggle} aria-label="Expandable global">
       <NavList>
-        <NavItem itemId={0} isActive={activeItem === 0} to="#dns-panel">
-          DNS
-        </NavItem>
-        <NavItem itemId={1} isActive={activeItem === 1} to="#policy">
-          Opção 2
-        </NavItem>
+        <NavExpandable title="DNS - Zonas" groupId="nav-group-1" isActive={activeGroup === 'nav-group-1'} isExpanded>
+          <NavItem preventDefault id="expandable-1" to="#expandable-1" groupId="nav-group-1"
+           itemId="nav-group-1_item-1" isActive={activeItem === 'nav-group-1_item-1'}>
+            teste.com.es.gov.br.
+          </NavItem>
+          <NavItem preventDefault id="expandable-2" to="#expandable-2" groupId="nav-group-1" 
+          itemId="nav-group-1_item-2" isActive={activeItem === 'nav-group-1_item-2'}>
+            corporativo.exemplo.gov.br.
+          </NavItem>
+          <NavItem preventDefault id="expandable-3" to="#expandable-3" groupId="nav-group-1" 
+          itemId="nav-group-1_item-3" isActive={activeItem === 'nav-group-1_item-3'}>
+            servicos.digital.gov.br.
+          </NavItem>
+        </NavExpandable>
+
+        <NavExpandable title="Dashboard - EX2" groupId="nav-group-2" isActive={activeGroup === 'nav-group-2'} isExpanded>
+          <NavItem preventDefault onClick={onItemClick} id="expandable-custom-click" to="#expandable-custom-click" groupId="nav-group-2" 
+          itemId="nav-group-2_custom-click" isActive={activeItem === 'nav-group-2_custom-click'}>
+            Custom onClick Link
+          </NavItem>
+          <NavItem preventDefault id="expandable-4" to="#expandable-4" groupId="nav-group-2" 
+          itemId="nav-group-2_item-1" isActive={activeItem === 'nav-group-2_item-1'}>
+            Subnav 2 Link 1
+          </NavItem>
+          <NavItem preventDefault id="expandable-5" to="#expandable-5" groupId="nav-group-2" 
+          itemId="nav-group-2_item-2" isActive={activeItem === 'nav-group-2_item-2'}>
+            Subnav 2 Link 2
+          </NavItem>
+          <NavItem preventDefault id="expandable-6" to="#expandable-6" groupId="nav-group-2" 
+          itemId="nav-group-2_item-3" isActive={activeItem === 'nav-group-2_item-3'}>
+            Subnav 2 Link 3
+          </NavItem>
+        </NavExpandable>
       </NavList>
     </Nav>
   );
@@ -288,7 +334,7 @@ export default function App() {
             setActiveSortDirection(activeSortDirection !== null ? activeSortDirection : 'asc');
           }
         }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)} isExpanded={isSortDropdownOpen} variant="plain" aria-label="Sort columns" icon={<SortAmountDownIcon />} />}>
-          <SelectGroup label="Sort column">
+          <SelectGroup label="Ordenar por">
             <SelectList>
               {Object.values(columnNames).map((column, columnIndex) => (
                 <SelectOption key={column} value={columnIndex} isSelected={activeSortIndex === columnIndex}>
@@ -297,7 +343,7 @@ export default function App() {
               ))}
             </SelectList>
           </SelectGroup>
-          <SelectGroup label="Sort direction">
+          <SelectGroup label="Ordenação">
             <SelectList>
               <SelectOption isSelected={activeSortDirection === 'asc'} value="asc" key="ascending">Crescente</SelectOption>
               <SelectOption isSelected={activeSortDirection === 'desc'} value="desc" key="descending">Decrescente</SelectOption>
