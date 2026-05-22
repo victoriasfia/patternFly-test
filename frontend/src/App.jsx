@@ -2,13 +2,14 @@ import { Fragment, useState } from 'react';
 import {
   Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, ButtonVariant, Content, Divider, Dropdown, 
   DropdownGroup, DropdownItem, DropdownList, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
-  MastheadBrand, MastheadToggle, MenuToggle, Nav, NavExpandable, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
+  MastheadBrand, Icon, MastheadToggle, MenuToggle, Nav, NavExpandable, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
   ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup
 } from '@patternfly/react-core';
 import { createRoot } from "react-dom/client";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import "@patternfly/react-core/dist/styles/base.css";
 import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
@@ -50,7 +51,7 @@ export default function App() {
     action: 'Ação'
   };
 
-  const repositories = [
+const repositories = [
   { 
     name: 'google.teste.es.gov.br.', 
     type: 'CNAME', 
@@ -87,10 +88,73 @@ export default function App() {
     action: '' 
   },
   { 
-    name: 'filme', 
+    name: 'portal.teste.es.gov.br.', 
+    type: 'A', 
+    value: '192.168.10.5', 
+    owner: 'Equipe Web', 
+    action: '' 
+  },
+  { 
+    name: 'api.teste.es.gov.br.', 
+    type: 'A', 
+    value: '10.1.0.25', 
+    owner: 'Equipe Backend', 
+    action: '' 
+  },
+  { 
+    name: 'login.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'auth.securelogin.net.', 
+    owner: 'Equipe Segurança', 
+    action: '' 
+  },
+  { 
+    name: 'cloudbackup.teste.es.gov.br.', 
     type: 'NS', 
-    value: 'ns6.devfilm.com.', 
-    owner: 'Equipe teste', 
+    value: 'ns1.cloudstorage.com.', 
+    owner: 'Equipe Infra', 
+    action: '' 
+  },
+  { 
+    name: 'monitor.teste.es.gov.br.', 
+    type: 'A', 
+    value: '172.16.5.80', 
+    owner: 'Equipe NOC', 
+    action: '' 
+  },
+  { 
+    name: 'chatinterno.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'teams.communicationhub.io.', 
+    owner: 'Equipe Comunicação', 
+    action: '' 
+  },
+  { 
+    name: 'homolog.teste.es.gov.br.', 
+    type: 'A', 
+    value: '192.168.50.12', 
+    owner: 'Equipe QA', 
+    action: '' 
+  },
+  { 
+    name: 'arquivos.teste.es.gov.br.', 
+    type: 'A', 
+    value: '10.10.10.10', 
+    owner: 'Equipe Storage', 
+    action: '' 
+  },
+  { 
+    name: 'centralajuda.teste.es.gov.br.', 
+    type: 'CNAME', 
+    value: 'suporte.helpdesk.com.', 
+    owner: 'Equipe Suporte', 
+    action: '' 
+  },
+  { 
+    name: 'dnssec.teste.es.gov.br.', 
+    type: 'NS', 
+    value: 'ns2.securedns.net.', 
+    owner: 'Equipe Redes', 
     action: '' 
   }
 ];
@@ -101,11 +165,6 @@ export default function App() {
     setStatusIsExpanded(false);
   };
 
-  const onRiskToggle = () => setRiskIsExpanded(!riskIsExpanded);
-  const onRiskSelect = (_event, selection) => {
-    setRiskSelected(selection);
-    setRiskIsExpanded(false);
-  };
 
   const onSelect = (_event, result) => {
     setActiveGroup(result.groupId);
@@ -184,18 +243,23 @@ export default function App() {
     <Toolbar id="toolbar" isStatic>
       <ToolbarContent>
         <ToolbarGroup variant="action-group-plain" align={{ default: 'alignEnd' }} gap={{ default: 'gapNone', md: 'gapMd' }}>
+
           <ToolbarGroup variant="action-group-plain" visibility={{ default: 'hidden', lg: 'visible' }}>
             <ToolbarItem>
               <Button aria-label="Help" variant={ButtonVariant.plain} icon={<QuestionCircleIcon />} />
             </ToolbarItem>
           </ToolbarGroup>
           <ToolbarItem visibility={{ default: 'hidden', md: 'visible', lg: 'hidden' }}>
-            <Dropdown isOpen={isKebabDropdownOpen} onSelect={onKebabDropdownSelect} onOpenChange={isOpen => setIsKebabDropdownOpen(isOpen)} popperProps={{ position: 'right' }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onKebabDropdownToggle} isExpanded={isKebabDropdownOpen} variant="plain" aria-label="Settings and help" icon={<EllipsisVIcon />} />}>
+            <Dropdown isOpen={isKebabDropdownOpen} onSelect={onKebabDropdownSelect} onOpenChange={isOpen => setIsKebabDropdownOpen(isOpen)} popperProps={{ position: 'right' }} 
+            toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onKebabDropdownToggle} isExpanded={isKebabDropdownOpen} 
+            variant="plain" aria-label="Settings and help" icon={<EllipsisVIcon />} />}>
               <DropdownList>{kebabDropdownItems}</DropdownList>
             </Dropdown>
           </ToolbarItem>
           <ToolbarItem visibility={{ md: 'hidden' }}>
-            <Dropdown isOpen={isFullKebabDropdownOpen} onSelect={onFullKebabDropdownSelect} onOpenChange={isOpen => setIsFullKebabDropdownOpen(isOpen)} popperProps={{ position: 'right' }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onFullKebabDropdownToggle} isExpanded={isFullKebabDropdownOpen} variant="plain" aria-label="Toolbar menu" icon={<EllipsisVIcon />} />}>
+            <Dropdown isOpen={isFullKebabDropdownOpen} onSelect={onFullKebabDropdownSelect} onOpenChange={isOpen => setIsFullKebabDropdownOpen(isOpen)} 
+            popperProps={{ position: 'right' }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onFullKebabDropdownToggle} isExpanded={isFullKebabDropdownOpen} 
+            variant="plain" aria-label="Toolbar menu" icon={<EllipsisVIcon />} />}>
               <DropdownGroup key="group 2" aria-label="User actions">
                 <DropdownList>{userDropdownItems}</DropdownList>
               </DropdownGroup>
@@ -205,7 +269,8 @@ export default function App() {
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem visibility={{ default: 'hidden', md: 'visible' }}>
-          <Dropdown isOpen={isDropdownOpen} onSelect={onDropdownSelect} onOpenChange={isOpen => setIsDropdownOpen(isOpen)} popperProps={{ position: 'right' }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onDropdownToggle} isExpanded={isDropdownOpen} icon={<Avatar src={imgAvatar} alt="" size="sm" />}>
+          <Dropdown isOpen={isDropdownOpen} onSelect={onDropdownSelect} onOpenChange={isOpen => setIsDropdownOpen(isOpen)} popperProps={{ position: 'right' }} 
+          toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={onDropdownToggle} isExpanded={isDropdownOpen} icon={<Avatar src={imgAvatar} alt="" size="sm" />}>
                 Usuário
               </MenuToggle>}>
             <DropdownList>{userDropdownItems}</DropdownList>
@@ -300,29 +365,6 @@ export default function App() {
           style={{ width: '250px' }}
         />
       </ToolbarItem>
-      
-      {/* Grupo de Filtros */}
-      <ToolbarGroup variant="filter-group">
-        <ToolbarItem>
-          <FilterIcon/> Filtrar por:
-          <Select toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => onStatusToggle()} isExpanded={statusIsExpanded} style={{ width: '200px', margin: '0 8px' }}>
-                {statusSelected || 'Todos os Tipos'}
-              </MenuToggle>} onSelect={onStatusSelect} onOpenChange={isOpen => setStatusIsExpanded(isOpen)} selected={statusSelected} isOpen={statusIsExpanded}>
-            <SelectList>
-              {statusOptions.map((option, index) => <SelectOption key={index} value={option}>{option}</SelectOption>)}
-            </SelectList>
-          </Select>
-        </ToolbarItem>
-        <ToolbarItem>
-          <Select toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => onRiskToggle()} isExpanded={riskIsExpanded} style={{ width: '200px', margin: '0 8px' }}>
-                {riskSelected || 'Todos os Owners'}
-              </MenuToggle>} onSelect={onRiskSelect} selected={riskSelected} isOpen={riskIsExpanded} onOpenChange={isOpen => setRiskIsExpanded(isOpen)}>
-            <SelectList>
-              {riskOptions.map((option, index) => <SelectOption key={index} value={option}>{option}</SelectOption>)}
-            </SelectList>
-          </Select>
-        </ToolbarItem>
-      </ToolbarGroup>
 
       {/* Botão de Ordenação (Sort) Movido para a Toolbar principal */}
       <ToolbarItem>
@@ -333,7 +375,8 @@ export default function App() {
             setActiveSortIndex(value);
             setActiveSortDirection(activeSortDirection !== null ? activeSortDirection : 'asc');
           }
-        }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)} isExpanded={isSortDropdownOpen} variant="plain" aria-label="Sort columns" icon={<SortAmountDownIcon />} />}>
+        }} toggle={toggleRef => <MenuToggle ref={toggleRef} onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)} isExpanded={isSortDropdownOpen} variant="plain" 
+        aria-label="Sort columns" icon={<SortAmountDownIcon />} />}>
           <SelectGroup label="Ordenar por">
             <SelectList>
               {Object.values(columnNames).map((column, columnIndex) => (
@@ -351,6 +394,12 @@ export default function App() {
           </SelectGroup>
         </Select>
       </ToolbarItem>
+      <Fragment>
+        Criar novo registro
+      <Icon size="bodyLg">
+        <PlusCircleIcon />
+        </Icon>
+      </Fragment>
     </Fragment>
   );
 
