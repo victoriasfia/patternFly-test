@@ -16,7 +16,6 @@ import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import EllipsisVIcon from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import SortAmountDownIcon from '@patternfly/react-icons/dist/esm/icons/sort-amount-down-icon';
-
 import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.svg';
 import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg';
 
@@ -222,6 +221,8 @@ export default function App() {
       ref={toggleRef}
       onClick={() => setIsOpen(!isOpen)}
       isExpanded={isOpen}
+      style={{width: '200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}
     >
       {isOpen ? "Zonas" : "Zonas"}
     </MenuToggle>
@@ -309,6 +310,19 @@ export default function App() {
     </SkipToContent>
   );
 
+
+  const addRecordButton = (
+    <Button variant="primary" onClick={() => console.log('Criar novo registro')}
+    style={{ display: 'flex', alignItems: 'center',
+      hover: { backgroundColor: '#0066cc' },
+      focus: { backgroundColor: '#005bb5' },
+      active: { backgroundColor: '#004999' },
+      position: 'left', marginLeft: '1000px',
+      }}>
+      Criar novo registro
+    </Button>
+  );
+
   const toggleGroupItems = (
     <Fragment>
       {/* Input de Busca */}
@@ -347,10 +361,7 @@ export default function App() {
         </Select>
       </ToolbarItem>
       <Fragment>
-        Criar novo registro
-      <Icon size="bodyLg">
-        <PlusCircleIcon />
-        </Icon>
+        {addRecordButton}
       </Fragment>
     </Fragment>
   );
