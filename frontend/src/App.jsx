@@ -1,19 +1,18 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useRef } from 'react';
 import {
-  Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, ButtonVariant, Content, Divider, Dropdown, 
+  Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, Content, Divider, Dropdown, 
   DropdownGroup, DropdownItem, DropdownList, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
   MastheadBrand, Icon, MastheadToggle, MenuToggle, Nav, NavExpandable, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
-  ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup
+  ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup,
+  Menu,MenuList,MenuContent, MenuSearch, MenuSearchInput, MenuContainer
 } from '@patternfly/react-core';
 import { createRoot } from "react-dom/client";
 import { Table, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
-
 import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import "@patternfly/react-core/dist/styles/base.css";
 import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
-import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
 import EllipsisVIcon from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import SortAmountDownIcon from '@patternfly/react-icons/dist/esm/icons/sort-amount-down-icon';
@@ -24,6 +23,11 @@ import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Co
 export default function App() {
   const [activeGroup, setActiveGroup] = useState('nav-group-1');
   const [activeItem, setActiveItem] = useState('nav-group-1_item-1');
+  
+  const [input, setInput] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleRef = useRef(undefined);
+  const menuRef = useRef(undefined);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
@@ -145,21 +149,24 @@ export default function App() {
     columnIndex
   });
 
+  {/* itens do dropdown do kebab menu */}
   const kebabDropdownItems = (
     <>
-      <DropdownItem><CogIcon /> Settings</DropdownItem>
-      <DropdownItem><HelpIcon /> Help</DropdownItem>
+      <DropdownItem><CogIcon/> Settings</DropdownItem>
+      <DropdownItem><HelpIcon/> Help</DropdownItem>
     </>
   );
   
+  {/* itens do dropdown do avatar do usuário */}
   const userDropdownItems = (
     <>
-      <DropdownItem key="group 2 profile">My profile</DropdownItem>
-      <DropdownItem key="group 2 user">User management</DropdownItem>
-      <DropdownItem key="group 2 logout">Logout</DropdownItem>
+      <DropdownItem key="group 2 profile">Meu Perfil</DropdownItem>
+      <DropdownItem key="group 2 user">Gerenciamento de Usuário</DropdownItem>
+      <DropdownItem key="group 2 logout">Sair</DropdownItem>
     </>
   );
 
+  {/* ações para cada registro da tabela */}
   const recordsActions = (repo) => [
     {
       title: 'Editar',
@@ -179,15 +186,53 @@ export default function App() {
     }
   ];
 
+
+  {/* menu para escolher a zona */}
+  const menuListItemsText = [
+    "teste.com.es.gov.br.",
+    "corporativo.exemplo.gov.br.",
+    "servicos.digital.gov.br."
+  ];
+
+  const handleTextInputChange = (value) => {
+    if (!isOpen) {
+      setIsOpen(true);
+    }
+    setInput(value);
+  };
+
+  const menuListItems = menuListItemsText
+    .filter(
+      (item) =>
+        !input || item.toLowerCase().includes(input.toString().toLowerCase())
+    )
+    .map((currentValue, index) => (
+      <SelectOption key={currentValue} itemId={index}>
+        {currentValue}
+      </SelectOption>
+    ));
+  if (input && menuListItems.length === 0) {
+    menuListItems.push(
+      <SelectOption isDisabled key="no result">
+        Zona não encontrada
+      </SelectOption>
+    );
+  }
+  const toggle = (
+    <MenuToggle 
+      ref={toggleRef}
+      onClick={() => setIsOpen(!isOpen)}
+      isExpanded={isOpen}
+    >
+      {isOpen ? "Zonas" : "Zonas"}
+    </MenuToggle>
+  );
+
   const headerToolbar = (
     <Toolbar id="toolbar" isStatic>
       <ToolbarContent>
         <ToolbarGroup variant="action-group-plain" align={{ default: 'alignEnd' }} gap={{ default: 'gapNone', md: 'gapMd' }}>
-
           <ToolbarGroup variant="action-group-plain" visibility={{ default: 'hidden', lg: 'visible' }}>
-            <ToolbarItem>
-              <Button aria-label="Help" variant={ButtonVariant.plain} icon={<QuestionCircleIcon />} />
-            </ToolbarItem>
           </ToolbarGroup>
           <ToolbarItem visibility={{ default: 'hidden', md: 'visible', lg: 'hidden' }}>
             <Dropdown isOpen={isKebabDropdownOpen} onSelect={onKebabDropdownSelect} onOpenChange={isOpen => setIsKebabDropdownOpen(isOpen)} popperProps={{ position: 'right' }} 
@@ -349,7 +394,38 @@ export default function App() {
   );
 
 
+  {/*menu para escolher a zona*/}
+  const menu = (
+    <Menu
+      ref={menuRef}
+      onSelect={onSelect}
+      activeItemId={activeItem}
+      isScrollable
+    >
+      <MenuSearch>
+        <MenuSearchInput>
+          <SearchInput
+            placeholder="Selecione a Zona..."
+            value={input}
+            aria-label="Filter menu items"
+            onChange={(_event, value) => handleTextInputChange(value)}
+            onClear={(event) => {
+              event.stopPropagation();
+              handleTextInputChange("");
+            }}
+          />
+        </MenuSearchInput>
+      </MenuSearch>
+      <Divider />
+      <MenuContent maxMenuHeight="200px">
+        <MenuList>{menuListItems}</MenuList>
+      </MenuContent>
+    </Menu>
+  );
+
+
   return (
+    
     <Page masthead={masthead} sidebar={sidebar} isManagedSidebar skipToContent={pageSkipToContent} mainContainerId={mainContainerId}>
       {/* Título da Página */}
       <PageGroup stickyOnBreakpoint={{ default: 'top' }}>
@@ -357,6 +433,15 @@ export default function App() {
           <Content>
             <h1 id="main-title">Gerenciador DNS</h1>
             <p>Gerencie os registros DNS de sua infraestrutura.</p>
+            <MenuContainer
+              menu={menu}
+              menuRef={menuRef}
+              toggle={toggle}
+              toggleRef={toggleRef}
+              isOpen={isOpen}
+              onOpenChange={(isOpen) => setIsOpen(isOpen)}
+              onOpenChangeKeys={["Escape"]}
+            />
           </Content>
         </PageSection>
       </PageGroup>
