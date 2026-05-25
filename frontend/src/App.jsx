@@ -7,7 +7,7 @@ import {
   ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup
 } from '@patternfly/react-core';
 import { createRoot } from "react-dom/client";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
 
 import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import "@patternfly/react-core/dist/styles/base.css";
@@ -159,6 +159,25 @@ export default function App() {
       <DropdownItem key="group 2 logout">Logout</DropdownItem>
     </>
   );
+
+  const recordsActions = (repo) => [
+    {
+      title: 'Editar',
+      onClick: () => console.log('Editando:', repo.name)
+    },
+    {
+      title: 'Clonar',
+      onClick: () => console.log('Clonando:', repo.name)
+    },
+    {
+      isSeparator: true // separar delete dos outros itens 
+    },
+    {
+      title: 'Deletar',
+      onClick: () => console.log('Deletando:', repo.name),
+      isDanger: true
+    }
+  ];
 
   const headerToolbar = (
     <Toolbar id="toolbar" isStatic>
@@ -364,7 +383,11 @@ export default function App() {
                 <Td dataLabel={columnNames.type}>{repo.type}</Td>
                 <Td dataLabel={columnNames.value}>{repo.value}</Td>
                 <Td dataLabel={columnNames.owner}>{repo.owner}</Td>
-                
+                <Td class="pf-m-action" isActionCell>
+                  <ActionsColumn 
+                    items={recordsActions(repo)} 
+                  />
+                </Td>
               </Tr>
             ))}
           </Tbody>
