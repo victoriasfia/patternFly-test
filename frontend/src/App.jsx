@@ -2,7 +2,7 @@ import { Fragment, useState, useRef } from 'react';
 import {
   Avatar, Brand, Breadcrumb, ToolbarToggleGroup, BreadcrumbItem, Button, Content, Divider, Dropdown, 
   DropdownGroup, DropdownItem, DropdownList, Masthead, MastheadMain, MastheadLogo, MastheadContent, 
-  MastheadBrand, Icon, MastheadToggle, MenuToggle, Nav, NavExpandable, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
+  MastheadBrand, Icon, MastheadToggle, MenuToggle, Nav, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
   ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup,
   Menu,MenuList,MenuContent, MenuSearch, MenuSearchInput, MenuContainer
@@ -21,8 +21,7 @@ import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.sv
 import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg';
 
 export default function App() {
-  const [activeGroup, setActiveGroup] = useState('nav-group-1');
-  const [activeItem, setActiveItem] = useState('nav-group-1_item-1');
+  const [activeItem, setActiveItem] = useState(1);
   
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -282,41 +281,14 @@ export default function App() {
   );
 
   const pageNav = (
-      <Nav onSelect={onSelect} onToggle={onToggle} aria-label="Expandable global">
+      <Nav onSelect={onNavSelect}>
       <NavList>
-        <NavExpandable title="DNS - Zonas" groupId="nav-group-1" isActive={activeGroup === 'nav-group-1'} isExpanded>
-          <NavItem preventDefault id="expandable-1" to="#expandable-1" groupId="nav-group-1"
-           itemId="nav-group-1_item-1" isActive={activeItem === 'nav-group-1_item-1'}>
-            teste.com.es.gov.br.
-          </NavItem>
-          <NavItem preventDefault id="expandable-2" to="#expandable-2" groupId="nav-group-1" 
-          itemId="nav-group-1_item-2" isActive={activeItem === 'nav-group-1_item-2'}>
-            corporativo.exemplo.gov.br.
-          </NavItem>
-          <NavItem preventDefault id="expandable-3" to="#expandable-3" groupId="nav-group-1" 
-          itemId="nav-group-1_item-3" isActive={activeItem === 'nav-group-1_item-3'}>
-            servicos.digital.gov.br.
-          </NavItem>
-        </NavExpandable>
-
-        <NavExpandable title="Dashboard - EX2" groupId="nav-group-2" isActive={activeGroup === 'nav-group-2'} isExpanded>
-          <NavItem preventDefault onClick={onItemClick} id="expandable-custom-click" to="#expandable-custom-click" groupId="nav-group-2" 
-          itemId="nav-group-2_custom-click" isActive={activeItem === 'nav-group-2_custom-click'}>
-            Custom onClick Link
-          </NavItem>
-          <NavItem preventDefault id="expandable-4" to="#expandable-4" groupId="nav-group-2" 
-          itemId="nav-group-2_item-1" isActive={activeItem === 'nav-group-2_item-1'}>
-            Subnav 2 Link 1
-          </NavItem>
-          <NavItem preventDefault id="expandable-5" to="#expandable-5" groupId="nav-group-2" 
-          itemId="nav-group-2_item-2" isActive={activeItem === 'nav-group-2_item-2'}>
-            Subnav 2 Link 2
-          </NavItem>
-          <NavItem preventDefault id="expandable-6" to="#expandable-6" groupId="nav-group-2" 
-          itemId="nav-group-2_item-3" isActive={activeItem === 'nav-group-2_item-3'}>
-            Subnav 2 Link 3
-          </NavItem>
-        </NavExpandable>
+        <NavItem itemId={0} isActive={activeItem === 0} to="#dns-panel">
+          Registros DNS
+        </NavItem>
+        <NavItem itemId={1} isActive={activeItem === 1} to="#policy">
+          Opção 2
+        </NavItem>
       </NavList>
     </Nav>
   );
@@ -397,13 +369,16 @@ export default function App() {
   {/*menu para escolher a zona*/}
   const menu = (
     <Menu
+    
       ref={menuRef}
       onSelect={onSelect}
       activeItemId={activeItem}
       isScrollable
     >
-      <MenuSearch>
-        <MenuSearchInput>
+      <MenuSearch
+      >
+        <MenuSearchInput
+        >
           <SearchInput
             placeholder="Selecione a Zona..."
             value={input}
