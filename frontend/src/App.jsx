@@ -5,7 +5,9 @@ import {
   MastheadBrand, Icon, MastheadToggle, MenuToggle, Nav, NavItem, NavList, NotificationBadge, NotificationBadgeVariant,
   Page, PageBreadcrumb, PageGroup, PageSection, PageSidebar, PageSidebarBody, PageToggleButton, SkipToContent, Toolbar, 
   ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Select, SelectList, SelectOption, SelectGroup,
-  Menu,MenuList,MenuContent, MenuSearch, MenuSearchInput, MenuContainer
+  Menu,MenuList,MenuContent, MenuSearch, MenuSearchInput, MenuContainer,Form, FormGroup, TextInput, Grid, GridItem,
+   HelperText, HelperTextItem, FormHelperText, Modal, ModalVariant, FormSelect,
+   TextArea,FormSelectOption, Checkbox, ActionGroup
 } from '@patternfly/react-core';
 import { createRoot } from "react-dom/client";
 import { Table, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
@@ -41,11 +43,47 @@ export default function App() {
   const [activeSortIndex, setActiveSortIndex] = useState(null);
   const [activeSortDirection, setActiveSortDirection] = useState(null);
 
-  const [value, setValue] = useState('');
   const [resultsCount, setResultsCount] = useState(0);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [type, setType] = useState('Type');
+  const [value, setValue] = useState('');
+  const [owner, setOwner] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    type: '',
+    value: '',
+    owner: ''
+  });
   
   
-  const statusOptions = ['A', 'CNAME', 'NS', 'AAAA', 'TXT', 'SRV', 'PTR', 'SOA'];
+  const typeOptions = [{
+    value: 'A',
+    label: 'A',
+    disabled: false
+  }, {
+    value: 'CNAME',
+    label: 'CNAME',
+    disabled: false
+  }, {
+    value: 'NS',
+    label: 'NS',
+    disabled: false
+  }, {
+    value: 'AAAA',
+    label: 'AAAA',
+    disabled: false
+  }, {
+    value: 'TXT',
+    label: 'TXT',
+    disabled: false
+  }, {
+    value: 'SOA',
+    label: 'SOA',
+    disabled: false
+  }, 
+  ];
   const riskOptions = ['Equipe teste', 'Equipe Infra', 'Equipe Dev', 'Equipe banco de dados'];
   
   const columnNames = {
@@ -72,6 +110,19 @@ export default function App() {
     { name: 'centralajuda.teste.es.gov.br.', type: 'CNAME', value: 'suporte.helpdesk.com.',owner: 'Equipe Suporte'},
     { name: 'dnssec.teste.es.gov.br.',type: 'NS',  value: 'ns2.securedns.net.', owner: 'Equipe Redes'}
   ];
+
+  const handleNameChange = (_event, name) => {
+    setName(name);
+  };
+  const handleTypeChange = (_event, type) => {
+    setType(type);
+  };
+  const handleValueChange = (_event, value) => {
+    setValue(value);
+  };
+  const handleOwnerChange = (_event, owner) => {
+    setOwner(owner);
+  };
 
   const onStatusToggle = () => setStatusIsExpanded(!statusIsExpanded);
   const onStatusSelect = (_event, selection) => {
@@ -311,7 +362,7 @@ export default function App() {
   );
 
 
-  const addRecordButton = (
+{/*  const addRecordButton = (
     <Button variant="primary" onClick={() => console.log('Criar novo registro')}
     style={{ display: 'flex', alignItems: 'center',
       hover: { backgroundColor: '#0066cc' },
@@ -321,7 +372,29 @@ export default function App() {
       }}>
       Criar novo registro
     </Button>
-  );
+  );*/}
+
+  const handleToggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleInputChange = (_event, value) => {
+    const fieldName = _event.target.name;
+    setFormData(prevState => ({
+      ...prevState,
+      [fieldName]: value
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    
+    console.log('Dados prontos para envio:', formData);
+    
+    setFormData({ name: '', type: '', value: '', owner: '' });
+    handleToggleModal();
+  };
+
 
   const toggleGroupItems = (
     <Fragment>
@@ -334,7 +407,8 @@ export default function App() {
 
       {/* Botão de Ordenação (Sort) Movido para a Toolbar principal */}
       <ToolbarItem>
-        <Select isOpen={isSortDropdownOpen} selected={[activeSortDirection, activeSortIndex]} onOpenChange={isOpen => setIsSortDropdownOpen(isOpen)} onSelect={(event, value) => {
+        <Select isOpen={isSortDropdownOpen} selected={[activeSortDirection, activeSortIndex]} onOpenChange={isOpen => 
+        setIsSortDropdownOpen(isOpen)} onSelect={(event, value) => {
           if (value === 'asc' || value === 'desc') {
             setActiveSortDirection(value);
           } else {
@@ -361,8 +435,55 @@ export default function App() {
         </Select>
       </ToolbarItem>
       <Fragment>
-        {addRecordButton}
-      </Fragment>
+      <Button 
+        variant="primary" 
+        onClick={handleToggleModal}
+        style={{ marginLeft: '1000px' }} 
+      >
+        Criar Novo Registro
+      </Button>
+
+        <Modal
+        title="Criar Novo Registro DNS"
+          variant={ModalVariant.small}
+          isOpen={isModalOpen}>
+          <Form style={{ margin: '30px' }}>
+          <Grid hasGutter md={6}>
+            <GridItem span={12}>
+              <FormGroup label="Nome (host)" isRequired fieldId="grid-name-dns">
+                <TextInput isRequired type="text" id="grid-name-dns" name="grid-name-dns" 
+                aria-describedby="grid-name-dns-helper" value={name} onChange={handleNameChange} 
+                placeholder="Ex: exemplo.com"/>
+              </FormGroup>
+
+            </GridItem>
+            <FormGroup label="Tipo" isRequired fieldId="grid-type-dns">
+              <FormSelect value={typeOptions} onChange={handleTypeChange} id="horizontal-form-title" name="horizontal-form-title" aria-label="Your title">
+                {typeOptions.map((typeOptions, index) => <FormSelectOption isDisabled={typeOptions.disabled} key={index} value={typeOptions.value} label={typeOptions.label} />)}
+              </FormSelect>
+            </FormGroup>
+
+            <FormGroup label="Owner" fieldId="grid-owner-dns">
+              <TextInput type="tel" id="grid-owner-dns" name="grid-owner-dns" value={owner} onChange={handleOwnerChange} 
+              placeholder="Ex: Equipe dev"/>
+          </FormGroup>
+          </Grid>
+
+          <FormGroup label="Valor (IP/Destino)" isRequired fieldId="grid-value-dns">
+              <TextInput isRequired type="tel" id="grid-value-dns" name="grid-value-dns" value={value} onChange={handleValueChange} 
+              placeholder="Ex: 192.168.1.1"/>
+          </FormGroup>
+          <ActionGroup style={{margin: '10px auto', display: 'flex' }}>
+            <Button key="confirm" variant="primary" onClick={handleSubmit}>
+                Salvar Registro
+              </Button>,
+              <Button key="cancel" variant="link" onClick={handleToggleModal}>
+                Cancelar
+              </Button>
+          </ActionGroup>
+        </Form>;
+      </Modal>
+    </Fragment>
     </Fragment>
   );
 
@@ -408,7 +529,6 @@ export default function App() {
       </MenuContent>
     </Menu>
   );
-
 
   return (
     
