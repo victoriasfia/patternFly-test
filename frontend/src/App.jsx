@@ -157,9 +157,9 @@ export default function App() {
   const onFullKebabDropdownToggle = () => setIsFullKebabDropdownOpen(!isFullKebabDropdownOpen);
   const onFullKebabDropdownSelect = () => setIsFullKebabDropdownOpen(false);
 
-  const onChange = value => {
-    setValue(value);
-    setResultsCount(3);
+  const onChange = (newValue) => {
+    setValue(newValue);
+    setResultsCount(newValue.length);
   };
   const onClear = () => {
     setValue('');
@@ -171,17 +171,41 @@ export default function App() {
     return [name, type, value, owner];
   };
 
-  let sortedRepositories = repositories;
+  let filteredRepositories = repositories;
+
+  if (value) {
+    const lowerCaseSearch = value.toLowerCase();
+    
+    filteredRepositories = repositories.filter(repo => {
+      
+      const nameMatch = repo.name?.toLowerCase().includes(lowerCaseSearch);
+      const typeMatch = repo.type?.toLowerCase().includes(lowerCaseSearch);
+      // Convertido para String caso 'value' seja um número (ex: valor monetário/qtd)
+      const valueMatch = String(repo.value || '').toLowerCase().includes(lowerCaseSearch);
+      
+      // Se o texto digitado estiver em qualquer um dos 3, o registro aparece
+      return nameMatch || typeMatch || valueMatch;
+    });
+  }
+
+
+  let sortedRepositories = [...filteredRepositories];
+
   if (activeSortIndex !== null) {
-    sortedRepositories = repositories.sort((a, b) => {
+    sortedRepositories.sort((a, b) => {
       const aValue = getSortableRowValues(a)[activeSortIndex];
       const bValue = getSortableRowValues(b)[activeSortIndex];
-      if (typeof aValue === 'number') {
+      
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
         if (activeSortDirection === 'asc') return aValue - bValue;
         return bValue - aValue;
       } else {
-        if (activeSortDirection === 'asc') return aValue.localeCompare(bValue);
-        return bValue.localeCompare(aValue);
+        // tratamento de string
+        const strA = String(aValue || '');
+        const strB = String(bValue || '');
+        
+        if (activeSortDirection === 'asc') return strA.localeCompare(strB);
+        return strB.localeCompare(strA);
       }
     });
   }
@@ -218,8 +242,8 @@ export default function App() {
   {/* ações para cada registro da tabela */}
   const recordsActions = (repo) => [
     {
-      title: 'Editar',
-      onClick: () => console.log('Editando:', repo.name)
+      title: 'Editar', 
+      onClick: () => handleToggleModal(repo)
     },
     {
       title: 'Clonar',
@@ -400,8 +424,9 @@ export default function App() {
     <Fragment>
       {/* Input de Busca */}
       <ToolbarItem>
-        <SearchInput aria-label="Match with result count" placeholder="Buscar por nome, tipo ou valor..." 
-        value={value} onChange={(_event, value) => onChange(value)} onClear={onClear} resultsCount={resultsCount}
+        <SearchInput aria-label="Match with result count" 
+        placeholder="Buscar por nome, tipo ou valor..." 
+        value={value} onChange={(_event, value) => onChange(value)} onClear={onClear} resultsCount={value ? filteredRepositories.length : undefined}
         style={{width: '450px' }} />
       </ToolbarItem>
 
