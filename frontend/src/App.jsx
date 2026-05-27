@@ -46,10 +46,14 @@ export default function App() {
   const [resultsCount, setResultsCount] = useState(0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [type, setType] = useState('Type');
+  const [originalRecord, setOriginalRecord] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const [value, setValue] = useState('');
+  const [name, setName] = useState('');
+  const [type, setType] = useState('');
   const [owner, setOwner] = useState('');
+
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -93,7 +97,7 @@ export default function App() {
     owner: 'Owner',
   };
 
-  const repositories = [
+  const [repositories, setRepositories] = useState([
     { name: 'google.teste.es.gov.br.', type: 'CNAME', value: 'google.com', owner: 'Equipe Infra'},
     { name: 'shopp.teste.es.gov.br.', type: 'CNAME', value: 'marketplace', owner: 'equipe teste'},
     { name: 'painel.novaredes.teste.es.gov.br.', type: 'CNAME',  value: 'portal.novaredes.com.', owner: 'equipe teste'},
@@ -109,7 +113,10 @@ export default function App() {
     { name: 'arquivos.teste.es.gov.br.', type: 'A', value: '10.10.10.10', owner: 'Equipe Storage'},
     { name: 'centralajuda.teste.es.gov.br.', type: 'CNAME', value: 'suporte.helpdesk.com.',owner: 'Equipe Suporte'},
     { name: 'dnssec.teste.es.gov.br.',type: 'NS',  value: 'ns2.securedns.net.', owner: 'Equipe Redes'}
-  ];
+  ]);
+
+
+
 
   const handleNameChange = (_event, name) => {
     setName(name);
@@ -180,10 +187,8 @@ export default function App() {
       
       const nameMatch = repo.name?.toLowerCase().includes(lowerCaseSearch);
       const typeMatch = repo.type?.toLowerCase().includes(lowerCaseSearch);
-      // Convertido para String caso 'value' seja um número (ex: valor monetário/qtd)
       const valueMatch = String(repo.value || '').toLowerCase().includes(lowerCaseSearch);
       
-      // Se o texto digitado estiver em qualquer um dos 3, o registro aparece
       return nameMatch || typeMatch || valueMatch;
     });
   }
@@ -243,18 +248,18 @@ export default function App() {
   const recordsActions = (repo) => [
     {
       title: 'Editar', 
-      onClick: () => handleToggleModal(repo)
+      onClick: () => handleToggleModalEdit(repo)
     },
     {
       title: 'Clonar',
-      onClick: () => console.log('Clonando:', repo.name)
+      onClick: () => handleToggleModalClone(repo)
     },
     {
       isSeparator: true // separar delete dos outros itens 
     },
     {
       title: 'Deletar',
-      onClick: () => console.log('Deletando:', repo.name),
+      onClick: () => setRepositories(prev => prev.filter(item => item !== repo)),      
       isDanger: true
     }
   ];
@@ -385,20 +390,7 @@ export default function App() {
     </SkipToContent>
   );
 
-
-{/*  const addRecordButton = (
-    <Button variant="primary" onClick={() => console.log('Criar novo registro')}
-    style={{ display: 'flex', alignItems: 'center',
-      hover: { backgroundColor: '#0066cc' },
-      focus: { backgroundColor: '#005bb5' },
-      active: { backgroundColor: '#004999' },
-      position: 'left', marginLeft: '1000px',
-      }}>
-      Criar novo registro
-    </Button>
-  );*/}
-
-  const handleToggleModal = () => {
+   const handleToggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
 
@@ -410,15 +402,37 @@ export default function App() {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    
-    console.log('Dados prontos para envio:', formData);
-    
-    setFormData({ name: '', type: '', value: '', owner: '' });
-    handleToggleModal();
+
+  const handleToggleModalEdit = (repo) => {
+    setFormData({ ...repo });     
+    setIsEditMode(true);     
+    setOriginalRecord(repo); 
+    setIsModalOpen(true);    
   };
 
+  const handleToggleModalClone = (repo) => {
+    setFormData({ ...repo, name: `${repo.name} - Clone` });      
+    setIsEditMode(false);   
+    setOriginalRecord(null); 
+    setIsModalOpen(true);   
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (isEditMode) {
+      setRepositories(prevRepos => prevRepos.map(item => 
+        item === originalRecord ? formData : item
+      ));
+    } else {
+      setRepositories(prevRepos => [formData, ...prevRepos]);
+    }
+
+    setFormData({ name: '', type: '', value: '', owner: '' });
+    setIsEditMode(false);
+    setIsModalOpen(false);
+    setOriginalRecord(null);
+  };
 
   const toggleGroupItems = (
     <Fragment>
@@ -469,44 +483,73 @@ export default function App() {
       </Button>
 
         <Modal
-        title="Criar Novo Registro DNS"
+        title={isEditMode ? "Editar Registro DNS" : "Criar Novo Registro DNS"}
           variant={ModalVariant.small}
           isOpen={isModalOpen}>
+            
           <Form style={{ margin: '30px' }}>
           <Grid hasGutter md={6}>
             <GridItem span={12}>
+
               <FormGroup label="Nome (host)" isRequired fieldId="grid-name-dns">
-                <TextInput isRequired type="text" id="grid-name-dns" name="grid-name-dns" 
-                aria-describedby="grid-name-dns-helper" value={name} onChange={handleNameChange} 
+                <TextInput isRequired 
+                type="text" 
+                id="grid-name-dns" 
+                name="name" 
+                aria-describedby="grid-name-dns-helper" 
+                value={formData.name} 
+                onChange={handleInputChange} 
                 placeholder="Ex: exemplo.com"/>
               </FormGroup>
-
             </GridItem>
+
             <FormGroup label="Tipo" isRequired fieldId="grid-type-dns">
-              <FormSelect value={typeOptions} onChange={handleTypeChange} id="horizontal-form-title" name="horizontal-form-title" aria-label="Your title">
-                {typeOptions.map((typeOptions, index) => <FormSelectOption isDisabled={typeOptions.disabled} key={index} value={typeOptions.value} label={typeOptions.label} />)}
+              <FormSelect 
+              value={typeOptions} 
+              onChange={handleInputChange} 
+              id="horizontal-form-title" 
+              name="type" 
+              aria-label="Your title">
+                {typeOptions.map((option, index) => 
+                <FormSelectOption 
+                isDisabled={option.disabled} 
+                key={index} 
+                value={option.value} 
+                label={option.label} 
+                />)}
               </FormSelect>
             </FormGroup>
 
             <FormGroup label="Owner" fieldId="grid-owner-dns">
-              <TextInput type="tel" id="grid-owner-dns" name="grid-owner-dns" value={owner} onChange={handleOwnerChange} 
+              <TextInput type="text" 
+              id="grid-owner-dns" 
+              name="owner" 
+              value={formData.owner} 
+              onChange={handleInputChange} 
               placeholder="Ex: Equipe dev"/>
           </FormGroup>
           </Grid>
 
           <FormGroup label="Valor (IP/Destino)" isRequired fieldId="grid-value-dns">
-              <TextInput isRequired type="tel" id="grid-value-dns" name="grid-value-dns" value={value} onChange={handleValueChange} 
+              <TextInput isRequired 
+              type="text" 
+              id="grid-value-dns" 
+              name="value" 
+              value={formData.value} 
+              onChange={handleInputChange} 
               placeholder="Ex: 192.168.1.1"/>
           </FormGroup>
+
           <ActionGroup style={{margin: '10px auto', display: 'flex' }}>
             <Button key="confirm" variant="primary" onClick={handleSubmit}>
                 Salvar Registro
-              </Button>,
+              </Button>
               <Button key="cancel" variant="link" onClick={handleToggleModal}>
                 Cancelar
               </Button>
           </ActionGroup>
-        </Form>;
+          
+        </Form>
       </Modal>
     </Fragment>
     </Fragment>
