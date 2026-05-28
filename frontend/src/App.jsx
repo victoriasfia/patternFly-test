@@ -33,12 +33,6 @@ export default function App() {
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
   const [isFullKebabDropdownOpen, setIsFullKebabDropdownOpen] = useState(false);
   
-  const [inputValue, setInputValue] = useState('');
-  const [statusIsExpanded, setStatusIsExpanded] = useState(false);
-  const [statusSelected, setStatusSelected] = useState('');
-  const [riskIsExpanded, setRiskIsExpanded] = useState(false);
-  const [riskSelected, setRiskSelected] = useState('');
-
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeSortIndex, setActiveSortIndex] = useState(null);
   const [activeSortDirection, setActiveSortDirection] = useState(null);
@@ -88,7 +82,6 @@ export default function App() {
     disabled: false
   }, 
   ];
-  const riskOptions = ['Equipe teste', 'Equipe Infra', 'Equipe Dev', 'Equipe banco de dados'];
   
   const columnNames = {
     name: 'Nome',
@@ -116,43 +109,12 @@ export default function App() {
   ]);
 
 
-
-
-  const handleNameChange = (_event, name) => {
-    setName(name);
-  };
-  const handleTypeChange = (_event, type) => {
-    setType(type);
-  };
-  const handleValueChange = (_event, value) => {
-    setValue(value);
-  };
-  const handleOwnerChange = (_event, owner) => {
-    setOwner(owner);
-  };
-
-  const onStatusToggle = () => setStatusIsExpanded(!statusIsExpanded);
-  const onStatusSelect = (_event, selection) => {
-    setStatusSelected(selection);
-    setStatusIsExpanded(false);
-  };
-
-
   const onSelect = (_event, result) => {
     setActiveGroup(result.groupId);
     setActiveItem(result.itemId);
   };
 
-  const onToggle = (_event, result) => {
-    console.log(`Group ${result.groupId} expanded? ${result.isExpanded}`);
-  };
 
-
-  const onItemClick = (_event, itemId, _groupId) => {
-    console.log(`Custom click handler on ${itemId}`);
-  };
-
-  const onInputChange = newValue => setInputValue(newValue);
   const onNavSelect = (_event, selectedItem) => {
     typeof selectedItem.itemId === 'number' && setActiveItem(selectedItem.itemId);
   };
@@ -168,6 +130,7 @@ export default function App() {
     setValue(newValue);
     setResultsCount(newValue.length);
   };
+
   const onClear = () => {
     setValue('');
     setResultsCount(0);
@@ -381,6 +344,7 @@ export default function App() {
   );
 
   const mainContainerId = 'main-content';
+
   const pageSkipToContent = (
     <SkipToContent onClick={event => {
       event.preventDefault();
