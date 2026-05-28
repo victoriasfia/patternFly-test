@@ -159,25 +159,24 @@ export default function App() {
 
 
   let sortedRepositories = [...filteredRepositories];
-
-  if (activeSortIndex !== null) {
-    sortedRepositories.sort((a, b) => {
-      const aValue = getSortableRowValues(a)[activeSortIndex];
-      const bValue = getSortableRowValues(b)[activeSortIndex];
-      
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        if (activeSortDirection === 'asc') return aValue - bValue;
-        return bValue - aValue;
-      } else {
-        // tratamento de string
-        const strA = String(aValue || '');
-        const strB = String(bValue || '');
+    if (activeSortIndex !== null) {
+      sortedRepositories.sort((a, b) => {
+        const aValue = getSortableRowValues(a)[activeSortIndex];
+        const bValue = getSortableRowValues(b)[activeSortIndex];
         
-        if (activeSortDirection === 'asc') return strA.localeCompare(strB);
-        return strB.localeCompare(strA);
-      }
-    });
-  }
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          if (activeSortDirection === 'asc') return aValue - bValue;
+          return bValue - aValue;
+        } else {
+          // tratamento de string
+          const strA = String(aValue || '');
+          const strB = String(bValue || '');
+          
+          if (activeSortDirection === 'asc') return strA.localeCompare(strB);
+          return strB.localeCompare(strA);
+        }
+      });
+    }
 
   const getSortParams = columnIndex => ({
     sortBy: {
@@ -331,8 +330,8 @@ export default function App() {
         <NavItem itemId={0} isActive={activeItem === 0} to="#dns-panel">
           Registros DNS
         </NavItem>
-        <NavItem itemId={1} isActive={activeItem === 1} to="#policy">
-          Opção 2
+        <NavItem itemId={1} isActive={activeItem === 1} to="#alterations-panel">
+          Histórico de Alterações
         </NavItem>
       </NavList>
     </Nav>
@@ -622,9 +621,9 @@ export default function App() {
       )}
       
       {activeItem === 1 && (
-        <PageSection id="policy">
-          <h2>Opção 2 (Políticas)</h2>
-          <p>Aqui ficam as configurações da Opção 2...</p>
+        <PageSection id="alterations-panel">
+          <h2>Histórico de Alterações</h2>
+          <p>Aqui ficam os historicos de alterações dos registros DNS.</p>
         </PageSection>
       )}
     </Page>
