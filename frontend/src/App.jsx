@@ -95,17 +95,27 @@ export default function App() {
     { name: 'shopp.teste.es.gov.br.', type: 'CNAME', value: 'marketplace', owner: 'equipe teste'},
     { name: 'painel.novaredes.teste.es.gov.br.', type: 'CNAME',  value: 'portal.novaredes.com.', owner: 'equipe teste'},
     { name: 'backup.datacenterx.teste.es.gov.br.', type: 'NS', value: 'ns2.database.com.', owner: 'Equipe banco de dados'},
-    { name: 'filmestv.teste.es.gov.br.', type: 'A', value: '192.168.1.10', owner: 'Equipe Dev'},
+    { name: 'filmestv.teste.es.gov.br.', type: 'SOA', value: '192.168.1.10', owner: 'Equipe Dev'},
     { name: 'portal.teste.es.gov.br.', type: 'A', value: '192.168.10.5', owner: 'Equipe Web'},
-    { name: 'api.teste.es.gov.br.', type: 'A', value: '10.1.0.25', owner: 'Equipe Backend'},
+    { name: 'api.teste.es.gov.br.', type: 'AAAA', value: '10.1.0.25', owner: 'Equipe Backend'},
     { name: 'login.teste.es.gov.br.', type: 'CNAME', value: 'auth.securelogin.net.', owner: 'Equipe Segurança'},
     { name: 'cloudbackup.teste.es.gov.br.', type: 'NS', value: 'ns1.cloudstorage.com.', owner: 'Equipe Infra'},
     { name: 'monitor.teste.es.gov.br.', type: 'A', value: '172.16.5.80', owner: 'Equipe NOC'},
     { name: 'chatinterno.teste.es.gov.br.', type: 'CNAME', value: 'teams.communicationhub.io.', owner: 'Equipe Comunicação'},
     { name: 'homolog.teste.es.gov.br.', type: 'A', value: '192.168.50.12', owner: 'Equipe QA'},
-    { name: 'arquivos.teste.es.gov.br.', type: 'A', value: '10.10.10.10', owner: 'Equipe Storage'},
+    { name: 'arquivos.teste.es.gov.br.', type: 'AAAA', value: '10.10.10.10', owner: 'Equipe Storage'},
     { name: 'centralajuda.teste.es.gov.br.', type: 'CNAME', value: 'suporte.helpdesk.com.',owner: 'Equipe Suporte'},
-    { name: 'dnssec.teste.es.gov.br.',type: 'NS',  value: 'ns2.securedns.net.', owner: 'Equipe Redes'}
+    { name: 'dnssec.teste.es.gov.br.',type: 'NS',  value: 'ns2.securedns.net.', owner: 'Equipe Redes'},
+    { name: 'intranet.corporativo.exemplo.gov.br.', type: 'A', value: '10.50.1.15', owner: 'Equipe Infra' },
+    { name: 'mail.corporativo.exemplo.gov.br.', type: 'CNAME', value: 'mail.provedor.com.', owner: 'Equipe Comunicação' },
+    { name: 'erp.corporativo.exemplo.gov.br.', type: 'A', value: '10.50.2.100', owner: 'Equipe Sistemas' },
+    { name: 'vpn.corporativo.exemplo.gov.br.', type: 'NS', value: '177.10.20.5', owner: 'Equipe Redes' },
+    { name: 'sso.corporativo.exemplo.gov.br.', type: 'CNAME', value: 'auth.seguranca.net.', owner: 'Equipe Segurança' },
+    { name: 'api.servicos.digital.gov.br.', type: 'A', value: '172.20.10.50', owner: 'Equipe Backend' },
+    { name: 'portal.servicos.digital.gov.br.', type: 'CNAME', value: 'front.loadbalancer.com.', owner: 'Equipe Web' },
+    { name: 'cidadao.servicos.digital.gov.br.', type: 'A', value: '172.20.15.20', owner: 'Equipe Dev' },
+    { name: 'dados.servicos.digital.gov.br.', type: 'NS', value: 'ns1.databridge.com.', owner: 'Equipe Banco de Dados' },
+    { name: 'notificacoes.servicos.digital.gov.br.', type: 'CNAME', value: 'sns.cloudprovider.io.', owner: 'Equipe Mensageria' }
   ]);
 
 
@@ -259,6 +269,7 @@ export default function App() {
       </SelectOption>
     );
   }
+
   const toggle = (
     <MenuToggle 
       ref={toggleRef}
@@ -327,10 +338,10 @@ export default function App() {
   const pageNav = (
       <Nav onSelect={onNavSelect}>
       <NavList>
-        <NavItem itemId={0} isActive={activeItem === 0} to="#dns-panel">
+        <NavItem itemId={1} isActive={activeItem === 1} to="#dns-panel">
           Registros DNS
         </NavItem>
-        <NavItem itemId={1} isActive={activeItem === 1} to="#alterations-panel">
+        <NavItem itemId={0} isActive={activeItem === 0} to="#alterations-panel">
           Histórico de Alterações
         </NavItem>
       </NavList>
@@ -566,7 +577,7 @@ export default function App() {
   return (
     <Page masthead={masthead} sidebar={sidebar} isManagedSidebar skipToContent={pageSkipToContent} mainContainerId={mainContainerId}>
       {/* Título da Página */}
-      {activeItem === 0 && (
+      {activeItem === 1 && (
         <>
           <PageGroup stickyOnBreakpoint={{ default: 'top' }}>
             <PageSection isWidthLimited aria-labelledby="main-title" id="dns-panel">
@@ -620,7 +631,7 @@ export default function App() {
         </>
       )}
       
-      {activeItem === 1 && (
+      {activeItem === 0 && (
         <PageSection id="alterations-panel">
           <h2>Histórico de Alterações</h2>
           <p>Aqui ficam os historicos de alterações dos registros DNS.</p>
