@@ -117,6 +117,7 @@ export default function App() {
 
   const onNavSelect = (_event, selectedItem) => {
     typeof selectedItem.itemId === 'number' && setActiveItem(selectedItem.itemId);
+    event.preventDefault();
   };
 
   const onDropdownToggle = () => setIsDropdownOpen(!isDropdownOpen);
@@ -337,6 +338,7 @@ export default function App() {
     </Nav>
   );
 
+
   const sidebar = (
     <PageSidebar>
       <PageSidebarBody>{pageNav}</PageSidebarBody>
@@ -375,7 +377,7 @@ export default function App() {
   };
 
   const handleToggleModalClone = (repo) => {
-    setFormData({ ...repo, name: `${repo.name} - Clone` });      
+    setFormData({ ...repo, name: `${repo.name}` });      
     setIsEditMode(false);   
     setOriginalRecord(null); 
     setIsModalOpen(true);   
@@ -563,59 +565,68 @@ export default function App() {
   );
 
   return (
-    
     <Page masthead={masthead} sidebar={sidebar} isManagedSidebar skipToContent={pageSkipToContent} mainContainerId={mainContainerId}>
       {/* Título da Página */}
-      <PageGroup stickyOnBreakpoint={{ default: 'top' }}>
-        <PageSection isWidthLimited aria-labelledby="main-title">
-          <Content>
-            <h1 id="main-title">Gerenciador DNS</h1>
-            <p>Gerencie os registros DNS de sua infraestrutura.</p>
-            <MenuContainer
-              menu={menu}
-              menuRef={menuRef}
-              toggle={toggle}
-              toggleRef={toggleRef}
-              isOpen={isOpen}
-              onOpenChange={(isOpen) => setIsOpen(isOpen)}
-              onOpenChangeKeys={["Escape"]}
-            />
-          </Content>
-        </PageSection>
-      </PageGroup>
+      {activeItem === 0 && (
+        <>
+          <PageGroup stickyOnBreakpoint={{ default: 'top' }}>
+            <PageSection isWidthLimited aria-labelledby="main-title" id="dns-panel">
+              <Content>
+                <h1 id="main-title">Gerenciador DNS</h1>
+                <p>Gerencie os registros DNS de sua infraestrutura.</p>
+                <MenuContainer
+                  menu={menu}
+                  menuRef={menuRef}
+                  toggle={toggle}
+                  toggleRef={toggleRef}
+                  isOpen={isOpen}
+                  onOpenChange={(isOpen) => setIsOpen(isOpen)}
+                  onOpenChangeKeys={["Escape"]}
+                />
+              </Content>
+            </PageSection>
+          </PageGroup>
+          
+          {/* Toolbar Unificada e Tabela */}
+          <PageSection variant="light">
+            {/* Renderiza a Barra de Ferramentas (Busca, Filtro, Ordem) */}
+            {searchToolbar}
+            {/* Renderiza a Tabela */}
+            <Table aria-label="Sortable table custom toolbar">
+              <Thead>
+                <Tr>
+                  <Th sort={getSortParams(0)}>{columnNames.name}</Th>
+                  <Th sort={getSortParams(1)}>{columnNames.type}</Th>
+                  <Th sort={getSortParams(2)} info={{ tooltip: 'More information' }}>{columnNames.value}</Th>
+                  <Th sort={getSortParams(3)}>{columnNames.owner}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {sortedRepositories.map((repo, rowIndex) => (
+                  <Tr key={rowIndex}>
+                    <Td dataLabel={columnNames.name}>{repo.name}</Td>
+                    <Td dataLabel={columnNames.type}>{repo.type}</Td>
+                    <Td dataLabel={columnNames.value}>{repo.value}</Td>
+                    <Td dataLabel={columnNames.owner}>{repo.owner}</Td>
+                    <Td className="pf-m-action" isActionCell>
+                      <ActionsColumn 
+                        items={recordsActions(repo)} 
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </PageSection>
+        </>
+      )}
       
-      {/* Toolbar Unificada e Tabela */}
-      <PageSection variant="light">
-        {/* Renderiza a Barra de Ferramentas (Busca, Filtro, Ordem) */}
-        {searchToolbar}
-        
-        {/* Renderiza a Tabela */}
-        <Table aria-label="Sortable table custom toolbar">
-          <Thead>
-            <Tr>
-              <Th sort={getSortParams(0)}>{columnNames.name}</Th>
-              <Th sort={getSortParams(1)}>{columnNames.type}</Th>
-              <Th sort={getSortParams(2)} info={{ tooltip: 'More information' }}>{columnNames.value}</Th>
-              <Th sort={getSortParams(3)}>{columnNames.owner}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {sortedRepositories.map((repo, rowIndex) => (
-              <Tr key={rowIndex}>
-                <Td dataLabel={columnNames.name}>{repo.name}</Td>
-                <Td dataLabel={columnNames.type}>{repo.type}</Td>
-                <Td dataLabel={columnNames.value}>{repo.value}</Td>
-                <Td dataLabel={columnNames.owner}>{repo.owner}</Td>
-                <Td class="pf-m-action" isActionCell>
-                  <ActionsColumn 
-                    items={recordsActions(repo)} 
-                  />
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </PageSection>
+      {activeItem === 1 && (
+        <PageSection id="policy">
+          <h2>Opção 2 (Políticas)</h2>
+          <p>Aqui ficam as configurações da Opção 2...</p>
+        </PageSection>
+      )}
     </Page>
   );
 }
