@@ -21,6 +21,7 @@ import SortAmountDownIcon from '@patternfly/react-icons/dist/esm/icons/sort-amou
 import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.svg';
 import pfLogo from '@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg';
 
+
 export default function App() {
   const [activeItem, setActiveItem] = useState(1);
   
@@ -48,6 +49,8 @@ export default function App() {
   const [type, setType] = useState('');
   const [owner, setOwner] = useState('');
 
+  const [selectedZone, setSelectedZone] = useState("");
+
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -55,33 +58,7 @@ export default function App() {
     owner: ''
   });
   
-  
-  const typeOptions = [{
-    value: 'A',
-    label: 'A',
-    disabled: false
-  }, {
-    value: 'CNAME',
-    label: 'CNAME',
-    disabled: false
-  }, {
-    value: 'NS',
-    label: 'NS',
-    disabled: false
-  }, {
-    value: 'AAAA',
-    label: 'AAAA',
-    disabled: false
-  }, {
-    value: 'TXT',
-    label: 'TXT',
-    disabled: false
-  }, {
-    value: 'SOA',
-    label: 'SOA',
-    disabled: false
-  }, 
-  ];
+  const typeOptions =['A', 'AAAA', 'CNAME', 'TXT', 'MX', 'NS', 'SOA'];
   
   const columnNames = {
     name: 'Nome',
@@ -153,6 +130,13 @@ export default function App() {
   };
 
   let filteredRepositories = repositories;
+
+  if (selectedZone) {
+    filteredRepositories = filteredRepositories.filter(repo => 
+      // Usamos includes() aqui. Ajuste conforme sua regra de negócio (pode ser endsWith se a zona for estritamente o final da string)
+      repo.name.toLowerCase().includes(selectedZone.toLowerCase())
+    );
+  }
 
   if (value) {
     const lowerCaseSearch = value.toLowerCase();
@@ -240,10 +224,33 @@ export default function App() {
 
   {/* menu para escolher a zona */}
   const menuListItemsText = [
-    "teste.com.es.gov.br.",
+    "Todas as zonas",
+    "teste.es.gov.br.", 
     "corporativo.exemplo.gov.br.",
     "servicos.digital.gov.br."
   ];
+
+  {/* */}
+  const menuListItems= menuListItemsText
+    .filter(
+      (item) =>
+        !input || item.toLowerCase().includes(input.toString().toLowerCase())
+    )
+    .map((currentValue) => ( // lista os nomes das zonas disponíveis para o usuário clicar
+      <SelectOption key={currentValue} itemId={currentValue}>
+        {currentValue}
+      </SelectOption>
+    ));
+
+    {/*selecionar a zona */}
+    const onZoneSelect = (_event, itemId) => {
+    if (itemId === "Todas as zonas") {
+      setSelectedZone(""); // Limpa o filtro
+    } else {
+      setSelectedZone(itemId); // Define a zona escolhida
+    }
+    setIsOpen(false); // Fecha o dropdown após o clique
+  }
 
   const handleTextInputChange = (value) => {
     if (!isOpen) {
@@ -251,24 +258,6 @@ export default function App() {
     }
     setInput(value);
   };
-
-  const menuListItems = menuListItemsText
-    .filter(
-      (item) =>
-        !input || item.toLowerCase().includes(input.toString().toLowerCase())
-    )
-    .map((currentValue, index) => (
-      <SelectOption key={currentValue} itemId={index}>
-        {currentValue}
-      </SelectOption>
-    ));
-  if (input && menuListItems.length === 0) {
-    menuListItems.push(
-      <SelectOption isDisabled key="no result">
-        Zona não encontrada
-      </SelectOption>
-    );
-  }
 
   const toggle = (
     <MenuToggle 
@@ -278,7 +267,9 @@ export default function App() {
       style={{width: '200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}
     >
-      {isOpen ? "Zonas" : "Zonas"}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {selectedZone ? selectedZone : "Todas as zonas"}
+      </span>
     </MenuToggle>
   );
 
@@ -545,9 +536,8 @@ export default function App() {
   {/*menu para escolher a zona*/}
   const menu = (
     <Menu
-    
       ref={menuRef}
-      onSelect={onSelect}
+      onSelect={onZoneSelect}
       activeItemId={activeItem}
       isScrollable
     >
@@ -607,7 +597,7 @@ export default function App() {
                 <Tr>
                   <Th sort={getSortParams(0)}>{columnNames.name}</Th>
                   <Th sort={getSortParams(1)}>{columnNames.type}</Th>
-                  <Th sort={getSortParams(2)} info={{ tooltip: 'More information' }}>{columnNames.value}</Th>
+                  <Th sort={getSortParams(2)}>{columnNames.value}</Th>
                   <Th sort={getSortParams(3)}>{columnNames.owner}</Th>
                 </Tr>
               </Thead>
